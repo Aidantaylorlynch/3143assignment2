@@ -53,10 +53,10 @@ int main(int argc, char **argv) {
         // we dont want outside edges to send to neighbours outside the bounds
         if (leftNeighbour > 0 &&
             currentRank != 1 && // this is the left side of the grid
-            currentRank != 5 && // we dont want to send to our left neighbour 
+            currentRank != 6 && // we dont want to send to our left neighbour 
             currentRank != 11 && // because we dont have a left neighbour
             currentRank != 16) {
-            printf("rank: %d, left: %d\n\n", currentRank, leftNeighbour);
+            // printf("rank: %d, left: %d\n\n", currentRank, leftNeighbour);
             MPI_Isend(&randomNumber, 1, MPI_INT, leftNeighbour, leftNeighbourTag, MPI_COMM_WORLD, &leftRequest);
         }
         if (rightNeighbour < 21 &&
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
             currentRank != 10 && // we dont want to send to our right neighbour 
             currentRank != 15 && // because we dont have a right neighbour
             currentRank != 20) {
-            printf("rank: %d, right: %d\n\n", currentRank, rightNeighbour);
+            // printf("rank: %d, right: %d\n\n", currentRank, rightNeighbour);
             MPI_Isend(&randomNumber, 1, MPI_INT, rightNeighbour, rightNeighbourTag, MPI_COMM_WORLD, &rightRequest);
         }
         if (topNeighbour > 0 &&
@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
             currentRank != 3 && // because we dont have a top neighbour
             currentRank != 4 &&
             currentRank != 5) {
-            printf("rank: %d, top: %d\n\n", currentRank, topNeighbour);
+            // printf("rank: %d, top: %d\n\n", currentRank, topNeighbour);
             MPI_Isend(&randomNumber, 1, MPI_INT, topNeighbour, topNeighbourTag, MPI_COMM_WORLD, &topRequest);
         }
         if (bottomNeighbour < 21 &&
@@ -82,25 +82,37 @@ int main(int argc, char **argv) {
             currentRank != 18 && // because we dont have a bottom neighbour
             currentRank != 19 &&
             currentRank != 20) {
-            printf("rank: %d, bottom: %d\n\n", currentRank, bottomNeighbour);
+            // printf("rank: %d, bottom: %d\n\n", currentRank, bottomNeighbour);
             MPI_Isend(&randomNumber, 1, MPI_INT, bottomNeighbour, bottomNeighbourTag, MPI_COMM_WORLD, &bottomRequest);
         }
         
         // if corner dont receive
         // if edge, only receive 3
+        int loopCounter;
+        int eventCounter = 0;
+        int buff[4] = {0, 0, 0, 0};
         if (currentRank != 1 && // top left corner
             currentRank != 5 && // top right corner
             currentRank != 16 && // bottom left corner
             currentRank != 20) { // bottom right corner
             if (edge(currentRank) == 1) {
                 // receive 3
+                for (loopCounter = 0; loopCounter < 3; loopCounter ++) {
+                    MPI_Status status;
+                    MPI_Recv(&buff[loopCounter], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                    printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
+                }
+
             } else {
                 // receive 4
+                for (loopCounter = 0; loopCounter < 4; loopCounter ++) {
+                    MPI_Status status;
+                    MPI_Recv(&buff[loopCounter], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                    printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
+                }
             }
         }
     }
-
-    printf("rank: %d\n\n", currentRank);
 
     MPI_Finalize();
 }
