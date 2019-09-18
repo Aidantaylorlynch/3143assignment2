@@ -1,6 +1,28 @@
 #include <stdio.h>
 #include <mpi.h>
 
+int edge(int rank) {
+    if (rank == 1 ||
+        rank == 2 ||
+        rank == 3 ||
+        rank == 4 ||
+        rank == 5 ||
+        rank == 6 ||
+        rank == 10 ||
+        rank == 11 ||
+        rank == 15 ||
+        rank == 16 ||
+        rank == 17 ||
+        rank == 18 ||
+        rank == 19 ||
+        rank == 20
+    ) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 int main(int argc, char **argv) {
     int numberOfProcesses;
     int currentRank;
@@ -66,12 +88,16 @@ int main(int argc, char **argv) {
         
         // if corner dont receive
         // if edge, only receive 3
-        // if (currentRank != 1 && // top left corner
-        //     currentRank != 5 && // top right corner
-        //     currentRank != 16 && // bottom left corner
-        //     currentRank != 20) { // bottom right corner
-            
-        // }
+        if (currentRank != 1 && // top left corner
+            currentRank != 5 && // top right corner
+            currentRank != 16 && // bottom left corner
+            currentRank != 20) { // bottom right corner
+            if (edge(currentRank) == 1) {
+                // receive 3
+            } else {
+                // receive 4
+            }
+        }
     }
 
     printf("rank: %d\n\n", currentRank);
