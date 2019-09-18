@@ -31,11 +31,31 @@ int main(int argc, char **argv) {
     int rightNeighbourTag = 1;
     int topNeighbourTag = 2;
     int bottomNeighbourTag = 3;
+    int messageWaiting;
+    double maxTimeInterval = 10;
+    double iterationElapsedTime;
+    double iterationStartTime;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &numberOfProcesses);
     MPI_Comm_rank(MPI_COMM_WORLD, &currentRank);
 
+    iterationStartTime = MPI_Wtime();
+    iterationElapsedTime = 0;
     if (currentRank == masterRank) {
+        //receive for a certain time period
+        while (iterationElapsedTime < maxTimeInterval) {
+            MPI_Status status;
+            messageWaiting = 0;
+            MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &messageWaiting, &status);
+            if (messageWaiting) {
+                // receive
+                int buff[1];
+                MPI_Status status;
+                MPI_Recv(&buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                printf("received %d from %d \n\n", buff[0], status.MPI_SOURCE);
+            }
+            iterationElapsedTime = MPI_Wtime() - iterationStartTime; // update time
+        }
 
     } else {
         // generate random number
@@ -124,7 +144,9 @@ int main(int argc, char **argv) {
             if (buff[3] == 1) { // for processes that only receive 3 events, this defaults to 0 and wont affect results
                 eventCounter += 1;
             }
-            printf("rank: %d, events: %d\n", currentRank, eventCounter);
+            // printf("rank: %d, events: %d\n", currentRank, eventCounter);
+            int sendBud[1] = {1};
+            MPI_Send(&sendBud, 1, MPI_INT, masterRank, 1, MPI_COMM_WORLD);
         }
     }
 
