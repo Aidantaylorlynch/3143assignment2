@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
                 for (loopCounter = 0; loopCounter < 3; loopCounter ++) {
                     MPI_Status status;
                     MPI_Recv(&buff[loopCounter], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-                    printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
+                    // printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
                 }
 
             } else {
@@ -108,9 +108,23 @@ int main(int argc, char **argv) {
                 for (loopCounter = 0; loopCounter < 4; loopCounter ++) {
                     MPI_Status status;
                     MPI_Recv(&buff[loopCounter], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-                    printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
+                    // printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
                 }
             }
+            // buffer is filled with events if they occured
+            if (buff[0] == 1) {
+                eventCounter += 1;
+            }
+            if (buff[1] == 1) {
+                eventCounter += 1;
+            }
+            if (buff[2] == 1) {
+                eventCounter += 1;
+            }
+            if (buff[3] == 1) { // for processes that only receive 3 events, this defaults to 0 and wont affect results
+                eventCounter += 1;
+            }
+            printf("rank: %d, events: %d\n", currentRank, eventCounter);
         }
     }
 
