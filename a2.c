@@ -49,9 +49,11 @@ int main(int argc, char **argv) {
             MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &messageWaiting, &status);
             if (messageWaiting) {
                 // receive
-                int buff[1];
+                int buff[4];
                 MPI_Status status;
-                MPI_Recv(&buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                MPI_Recv(&buff, 4, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                // entries in buffer that are 0, are non events
+                // non-zero entries are the ranks of the node that triggered the event
                 printf("received %d from %d \n\n", buff[0], status.MPI_SOURCE);
             }
             iterationElapsedTime = MPI_Wtime() - iterationStartTime; // update time
@@ -77,7 +79,7 @@ int main(int argc, char **argv) {
             currentRank != 11 && // because we dont have a left neighbour
             currentRank != 16) {
             // printf("rank: %d, left: %d\n\n", currentRank, leftNeighbour);
-            MPI_Isend(&randomNumber, 1, MPI_INT, leftNeighbour, leftNeighbourTag, MPI_COMM_WORLD, &leftRequest);
+            MPI_Isend(&currentRank, 1, MPI_INT, leftNeighbour, leftNeighbourTag, MPI_COMM_WORLD, &leftRequest);
         }
         if (rightNeighbour < 21 &&
             currentRank != 5 && // this is the right side of the grid
@@ -85,7 +87,7 @@ int main(int argc, char **argv) {
             currentRank != 15 && // because we dont have a right neighbour
             currentRank != 20) {
             // printf("rank: %d, right: %d\n\n", currentRank, rightNeighbour);
-            MPI_Isend(&randomNumber, 1, MPI_INT, rightNeighbour, rightNeighbourTag, MPI_COMM_WORLD, &rightRequest);
+            MPI_Isend(&currentRank, 1, MPI_INT, rightNeighbour, rightNeighbourTag, MPI_COMM_WORLD, &rightRequest);
         }
         if (topNeighbour > 0 &&
             currentRank != 1 && // this is the top side of the grid
@@ -94,7 +96,7 @@ int main(int argc, char **argv) {
             currentRank != 4 &&
             currentRank != 5) {
             // printf("rank: %d, top: %d\n\n", currentRank, topNeighbour);
-            MPI_Isend(&randomNumber, 1, MPI_INT, topNeighbour, topNeighbourTag, MPI_COMM_WORLD, &topRequest);
+            MPI_Isend(&currentRank, 1, MPI_INT, topNeighbour, topNeighbourTag, MPI_COMM_WORLD, &topRequest);
         }
         if (bottomNeighbour < 21 &&
             currentRank != 16 && // this is the bottom side of the grid
@@ -103,7 +105,7 @@ int main(int argc, char **argv) {
             currentRank != 19 &&
             currentRank != 20) {
             // printf("rank: %d, bottom: %d\n\n", currentRank, bottomNeighbour);
-            MPI_Isend(&randomNumber, 1, MPI_INT, bottomNeighbour, bottomNeighbourTag, MPI_COMM_WORLD, &bottomRequest);
+            MPI_Isend(&currentRank, 1, MPI_INT, bottomNeighbour, bottomNeighbourTag, MPI_COMM_WORLD, &bottomRequest);
         }
         
         // if corner dont receive
@@ -145,8 +147,7 @@ int main(int argc, char **argv) {
                 eventCounter += 1;
             }
             // printf("rank: %d, events: %d\n", currentRank, eventCounter);
-            int sendBud[1] = {1};
-            MPI_Send(&sendBud, 1, MPI_INT, masterRank, 1, MPI_COMM_WORLD);
+            MPI_Send(&buff, 4, MPI_INT, masterRank, 1, MPI_COMM_WORLD);
         }
     }
 
