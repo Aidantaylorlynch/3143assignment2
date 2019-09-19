@@ -23,6 +23,10 @@ int edge(int rank) {
     }
 }
 
+int eventOccurred(int eventBuffer[4][2]) {
+    return 1;
+}
+
 int main(int argc, char **argv) {
     int numberOfProcesses;
     int currentRank;
@@ -49,12 +53,12 @@ int main(int argc, char **argv) {
             MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &messageWaiting, &status);
             if (messageWaiting) {
                 // receive
-                int buff[4];
+                int buff[4][2];
                 MPI_Status status;
-                MPI_Recv(&buff, 4, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                MPI_Recv(&buff, 8, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
                 // entries in buffer that are 0, are non events
                 // non-zero entries are the ranks of the node that triggered the event
-                printf("received %d from %d \n\n", buff[0], status.MPI_SOURCE);
+                printf("received %d from %d \n\n", buff[0][0], status.MPI_SOURCE);
             }
             iterationElapsedTime = MPI_Wtime() - iterationStartTime; // update time
         }
@@ -72,6 +76,9 @@ int main(int argc, char **argv) {
         MPI_Request rightRequest;
         MPI_Request topRequest;
         MPI_Request bottomRequest;
+        int event[2];
+        event[0] = randomNumber;
+        event[1] = currentRank;
         // we dont want outside edges to send to neighbours outside the bounds
         if (leftNeighbour > 0 &&
             currentRank != 1 && // this is the left side of the grid
@@ -79,7 +86,7 @@ int main(int argc, char **argv) {
             currentRank != 11 && // because we dont have a left neighbour
             currentRank != 16) {
             // printf("rank: %d, left: %d\n\n", currentRank, leftNeighbour);
-            MPI_Isend(&currentRank, 1, MPI_INT, leftNeighbour, leftNeighbourTag, MPI_COMM_WORLD, &leftRequest);
+            MPI_Isend(&event, 2, MPI_INT, leftNeighbour, leftNeighbourTag, MPI_COMM_WORLD, &leftRequest);
         }
         if (rightNeighbour < 21 &&
             currentRank != 5 && // this is the right side of the grid
@@ -87,7 +94,7 @@ int main(int argc, char **argv) {
             currentRank != 15 && // because we dont have a right neighbour
             currentRank != 20) {
             // printf("rank: %d, right: %d\n\n", currentRank, rightNeighbour);
-            MPI_Isend(&currentRank, 1, MPI_INT, rightNeighbour, rightNeighbourTag, MPI_COMM_WORLD, &rightRequest);
+            MPI_Isend(&event, 2, MPI_INT, rightNeighbour, rightNeighbourTag, MPI_COMM_WORLD, &rightRequest);
         }
         if (topNeighbour > 0 &&
             currentRank != 1 && // this is the top side of the grid
@@ -96,7 +103,7 @@ int main(int argc, char **argv) {
             currentRank != 4 &&
             currentRank != 5) {
             // printf("rank: %d, top: %d\n\n", currentRank, topNeighbour);
-            MPI_Isend(&currentRank, 1, MPI_INT, topNeighbour, topNeighbourTag, MPI_COMM_WORLD, &topRequest);
+            MPI_Isend(&event, 2, MPI_INT, topNeighbour, topNeighbourTag, MPI_COMM_WORLD, &topRequest);
         }
         if (bottomNeighbour < 21 &&
             currentRank != 16 && // this is the bottom side of the grid
@@ -105,14 +112,14 @@ int main(int argc, char **argv) {
             currentRank != 19 &&
             currentRank != 20) {
             // printf("rank: %d, bottom: %d\n\n", currentRank, bottomNeighbour);
-            MPI_Isend(&currentRank, 1, MPI_INT, bottomNeighbour, bottomNeighbourTag, MPI_COMM_WORLD, &bottomRequest);
+            MPI_Isend(&event, 2, MPI_INT, bottomNeighbour, bottomNeighbourTag, MPI_COMM_WORLD, &bottomRequest);
         }
         
         // if corner dont receive
         // if edge, only receive 3
         int loopCounter;
         int eventCounter = 0;
-        int buff[4] = {0, 0, 0, 0};
+        int buff[4][2] = {{0, 0}, {0, 0}, {0, 0}, {0, 0}};
         if (currentRank != 1 && // top left corner
             currentRank != 5 && // top right corner
             currentRank != 16 && // bottom left corner
@@ -121,7 +128,7 @@ int main(int argc, char **argv) {
                 // receive 3
                 for (loopCounter = 0; loopCounter < 3; loopCounter ++) {
                     MPI_Status status;
-                    MPI_Recv(&buff[loopCounter], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                    MPI_Recv(&buff[loopCounter][0], 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
                     // printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
                 }
 
@@ -129,25 +136,27 @@ int main(int argc, char **argv) {
                 // receive 4
                 for (loopCounter = 0; loopCounter < 4; loopCounter ++) {
                     MPI_Status status;
-                    MPI_Recv(&buff[loopCounter], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                    MPI_Recv(&buff[loopCounter][0], 2, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
                     // printf("rank: %d, received %d from %d, which is this processes %d\n", currentRank, buff[loopCounter] ,status.MPI_SOURCE, status.MPI_TAG);
                 }
             }
             // buffer is filled with events if they occured
-            if (buff[0] == 1) {
-                eventCounter += 1;
+            if (eventOccurred(buff)) {
+                MPI_Send(&buff, 8, MPI_INT, masterRank, 1, MPI_COMM_WORLD);
             }
-            if (buff[1] == 1) {
-                eventCounter += 1;
-            }
-            if (buff[2] == 1) {
-                eventCounter += 1;
-            }
-            if (buff[3] == 1) { // for processes that only receive 3 events, this defaults to 0 and wont affect results
-                eventCounter += 1;
-            }
+            // if (buff[0][0] == 1) {
+            //     eventCounter += 1;
+            // }
+            // if (buff[1][0] == 1) {
+            //     eventCounter += 1;
+            // }
+            // if (buff[2][0] == 1) {
+            //     eventCounter += 1;
+            // }
+            // if (buff[3][0] == 1) { // for processes that only receive 3 events, this defaults to 0 and wont affect results
+            //     eventCounter += 1;
+            // }
             // printf("rank: %d, events: %d\n", currentRank, eventCounter);
-            MPI_Send(&buff, 4, MPI_INT, masterRank, 1, MPI_COMM_WORLD);
         }
     }
 
