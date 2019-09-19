@@ -59,6 +59,7 @@ int eventOccurred(int eventBuffer[4][2]) {
 }
 
 int main(int argc, char **argv) {
+    FILE *fp;
     int numberOfProcesses;
     int currentRank;
     int masterRank = 0;
@@ -77,6 +78,7 @@ int main(int argc, char **argv) {
     iterationStartTime = MPI_Wtime();
     iterationElapsedTime = 0;
     if (currentRank == masterRank) {
+        fp = fopen("log.txt", "w");
         //receive for a certain time period
         while (iterationElapsedTime < maxTimeInterval) {
             MPI_Status status;
@@ -90,6 +92,7 @@ int main(int argc, char **argv) {
                 // entries in buffer that are 0, are non events
                 // non-zero entries are the ranks of the node that triggered the event
                 printf("received %d from %d \n\n", buff[0][0], status.MPI_SOURCE);
+		        fprintf(fp, "received %d from %d \n\n", buff[0][0], status.MPI_SOURCE);
             }
             iterationElapsedTime = MPI_Wtime() - iterationStartTime; // update time
         }
