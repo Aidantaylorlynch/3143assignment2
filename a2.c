@@ -24,7 +24,38 @@ int edge(int rank) {
 }
 
 int eventOccurred(int eventBuffer[4][2]) {
-    return 1;
+    if (eventBuffer[3][0] == 0) { // if 0, then this is an event from an edge node, and we need to compare all 3 events
+        if (eventBuffer[0][0] == eventBuffer[1][0] && eventBuffer[1][0] == eventBuffer[2][0]) {
+            // event occurred
+            return 1;
+        } else {
+            // event did not occur
+            return 0;
+        }
+    } else { // this is an event from a non-edge node so we need to check all 4 events
+        // sort array, so we only have to compare the first and last 3 elements to detect an event
+        int i;
+        int j;
+        for (i = 0; i < 4; i ++) {
+            for (j = i + 1; j < 4; j ++) {
+                if (eventBuffer[i][0] > eventBuffer[j][0]) {
+                    int temp[2];
+                    temp[0] = eventBuffer[i][0];
+                    temp[1] = eventBuffer[i][1];
+                    eventBuffer[i][0] = eventBuffer[j][0];
+                    eventBuffer[i][1] = eventBuffer[j][1];
+                    eventBuffer[j][0] = temp[0];
+                    eventBuffer[j][1] = temp[1];
+                }
+            }
+        }
+        if (eventBuffer[0][0] == eventBuffer[1][0] && eventBuffer[1][0] == eventBuffer[2][0] || // compare first 3 elements
+            eventBuffer[1][0] == eventBuffer[2][0] && eventBuffer[2][0] == eventBuffer[3][0] ) { // compare last 3 elements
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }
 
 int main(int argc, char **argv) {
@@ -159,6 +190,7 @@ int main(int argc, char **argv) {
             // printf("rank: %d, events: %d\n", currentRank, eventCounter);
         }
     }
+
 
     MPI_Finalize();
 }
