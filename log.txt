@@ -1,32 +1,103 @@
-received 1 from 11 
+Event received from node 9 (reference node)
+Details: 
+Node: 8, Event Value: 1 (adjacent node)
+Node: 10, Event Value: 1 (adjacent node)
+Node: 14, Event Value: 1 (adjacent node)
+Node: 4, Event Value: 1 (adjacent node)
 
-received 1 from 17 
+Event received from node 12 (reference node)
+Details: 
+Node: 13, Event Value: 1 (adjacent node)
+Node: 7, Event Value: 1 (adjacent node)
+Node: 17, Event Value: 1 (adjacent node)
+Node: 11, Event Value: 1 (adjacent node)
 
-received 1 from 13 
+Event received from node 3 (reference node)
+Details: 
+Node: 2, Event Value: 1 (adjacent node)
+Node: 8, Event Value: 1 (adjacent node)
+Node: 4, Event Value: 1 (adjacent node)
 
-received 1 from 3 
+Event received from node 10 (reference node)
+Details: 
+Node: 9, Event Value: 1 (adjacent node)
+Node: 5, Event Value: 1 (adjacent node)
+Node: 15, Event Value: 1 (adjacent node)
 
-received 1 from 7 
+Event received from node 8 (reference node)
+Details: 
+Node: 3, Event Value: 1 (adjacent node)
+Node: 9, Event Value: 1 (adjacent node)
+Node: 13, Event Value: 1 (adjacent node)
+Node: 7, Event Value: 1 (adjacent node)
 
-received 1 from 9 
+Event received from node 4 (reference node)
+Details: 
+Node: 3, Event Value: 1 (adjacent node)
+Node: 9, Event Value: 1 (adjacent node)
+Node: 5, Event Value: 1 (adjacent node)
 
-received 1 from 12 
+Event received from node 17 (reference node)
+Details: 
+Node: 12, Event Value: 1 (adjacent node)
+Node: 16, Event Value: 1 (adjacent node)
+Node: 18, Event Value: 1 (adjacent node)
 
-received 1 from 4 
+Event received from node 13 (reference node)
+Details: 
+Node: 8, Event Value: 1 (adjacent node)
+Node: 14, Event Value: 1 (adjacent node)
+Node: 12, Event Value: 1 (adjacent node)
+Node: 18, Event Value: 1 (adjacent node)
 
-received 1 from 8 
+Event received from node 2 (reference node)
+Details: 
+Node: 3, Event Value: 1 (adjacent node)
+Node: 7, Event Value: 1 (adjacent node)
+Node: 1, Event Value: 1 (adjacent node)
 
-received 1 from 2 
+Event received from node 15 (reference node)
+Details: 
+Node: 10, Event Value: 1 (adjacent node)
+Node: 14, Event Value: 1 (adjacent node)
+Node: 20, Event Value: 1 (adjacent node)
 
-received 1 from 10 
+Event received from node 19 (reference node)
+Details: 
+Node: 14, Event Value: 1 (adjacent node)
+Node: 18, Event Value: 1 (adjacent node)
+Node: 20, Event Value: 1 (adjacent node)
 
-received 1 from 6 
+Event received from node 14 (reference node)
+Details: 
+Node: 9, Event Value: 1 (adjacent node)
+Node: 13, Event Value: 1 (adjacent node)
+Node: 15, Event Value: 1 (adjacent node)
+Node: 19, Event Value: 1 (adjacent node)
 
-received 1 from 15 
+Event received from node 18 (reference node)
+Details: 
+Node: 13, Event Value: 1 (adjacent node)
+Node: 17, Event Value: 1 (adjacent node)
+Node: 19, Event Value: 1 (adjacent node)
 
-received 1 from 19 
+Event received from node 6 (reference node)
+Details: 
+Node: 7, Event Value: 1 (adjacent node)
+Node: 11, Event Value: 1 (adjacent node)
+Node: 1, Event Value: 1 (adjacent node)
 
-received 1 from 14 
+Event received from node 7 (reference node)
+Details: 
+Node: 2, Event Value: 1 (adjacent node)
+Node: 8, Event Value: 1 (adjacent node)
+Node: 12, Event Value: 1 (adjacent node)
+Node: 6, Event Value: 1 (adjacent node)
 
-received 1 from 18 
+Event received from node 11 (reference node)
+Details: 
+Node: 12, Event Value: 1 (adjacent node)
+Node: 16, Event Value: 1 (adjacent node)
+Node: 6, Event Value: 1 (adjacent node)
 
+Total number of events that occurred: 16

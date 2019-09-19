@@ -79,6 +79,7 @@ int main(int argc, char **argv) {
     iterationElapsedTime = 0;
     if (currentRank == masterRank) {
         fp = fopen("log.txt", "w");
+        int eventCounter = 0;
         //receive for a certain time period
         while (iterationElapsedTime < maxTimeInterval) {
             MPI_Status status;
@@ -89,13 +90,23 @@ int main(int argc, char **argv) {
                 int buff[4][2];
                 MPI_Status status;
                 MPI_Recv(&buff, 8, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                eventCounter += 1;
                 // entries in buffer that are 0, are non events
                 // non-zero entries are the ranks of the node that triggered the event
-                printf("received %d from %d \n\n", buff[0][0], status.MPI_SOURCE);
-		        fprintf(fp, "received %d from %d \n\n", buff[0][0], status.MPI_SOURCE);
+		        fprintf(fp, "Event received from node %d (reference node)\n", status.MPI_SOURCE);
+                fprintf(fp, "Details: \n");
+                fprintf(fp, "Node: %d, Event Value: %d (adjacent node)\n", buff[0][1], buff[0][0]);
+                fprintf(fp, "Node: %d, Event Value: %d (adjacent node)\n", buff[1][1], buff[1][0]);
+                fprintf(fp, "Node: %d, Event Value: %d (adjacent node)\n", buff[2][1], buff[2][0]);
+                if (buff[3][1] != 0) { // check if event was triggered by 3 or 4 nodes
+                    fprintf(fp, "Node: %d, Event Value: %d (adjacent node)\n", buff[3][1], buff[3][0]);
+                }
+                fprintf(fp, "\n");
             }
             iterationElapsedTime = MPI_Wtime() - iterationStartTime; // update time
+            printf("loading: %.0f%%\r", (iterationElapsedTime/maxTimeInterval * 100));
         }
+        fprintf(fp, "Total number of events that occurred: %d\n", eventCounter);
 
     } else {
         // generate random number
